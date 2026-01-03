@@ -1,1 +1,1 @@
-
+This repo is where I keep my TryHackMe CTF write-ups. I made it to track my progress, practice what I learn, and share my approach to solving challenges. Everything here is part of my learning journey in cybersecurity, so expect notes, mistakes, and lessons learned along the way.
