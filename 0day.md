@@ -178,7 +178,7 @@ turtle@10.80.160.139's password:
 turtle@10.80.160.139: Permission denied (publickey,password).
 ```
 
-
+now i move on web-server ,i use nikto to probe server if is vulnerable we can definatly exploit and get initial access
 
 
 
