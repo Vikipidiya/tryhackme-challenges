@@ -1,4 +1,5 @@
-<img width="1920" height="1080" alt="Screenshot at 2026-01-04 22-57-16" src="https://github.com/user-attachments/assets/4311c62a-9124-4d1c-8e96-94a0219ce45a" />
+<img width="680" height="340" alt="turtle" src="https://github.com/user-attachments/assets/addabb14-fc6a-426e-ac50-521699c514a2" />
+
 
 
 I started by running an Nmap scan to see what services were exposed on the target machine. This helps understand the attack surface before diving deeper.
