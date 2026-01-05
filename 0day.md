@@ -180,6 +180,40 @@ turtle@10.80.160.139: Permission denied (publickey,password).
 
 now i move on web-server ,i use nikto to probe server if is vulnerable we can definatly exploit and get initial access
 
+i use nikto for web server vulnerability scanning
+
+```
+mrbunny $ nikto -h 10.80.160.139
+- Nikto v2.5.0
+---------------------------------------------------------------------------
++ Target IP:          10.80.160.139
++ Target Hostname:    10.80.160.139
++ Target Port:        80
++ Start Time:         2026-01-05 00:44:51 (GMT-5)
+---------------------------------------------------------------------------
++ Server: Apache/2.4.7 (Ubuntu)
++ /: The anti-clickjacking X-Frame-Options header is not present. See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options
++ /: The X-Content-Type-Options header is not set. This could allow the user agent to render the content of the site in a different fashion to the MIME type. See: https://www.netsparker.com/web-vulnerability-scanner/vulnerabilities/missing-content-type-header/
++ /: Server may leak inodes via ETags, header found with file /, inode: bd1, size: 5ae57bb9a1192, mtime: gzip. See: http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2003-1418
++ Apache/2.4.7 appears to be outdated (current is at least Apache/2.4.54). Apache 2.2.34 is the EOL for the 2.x branch.
++ OPTIONS: Allowed HTTP Methods: GET, HEAD, POST, OPTIONS .
++ /cgi-bin/test.cgi: Uncommon header '93e4r0-cve-2014-6271' found, with contents: true.
++ /cgi-bin/test.cgi: Site appears vulnerable to the 'shellshock' vulnerability. See: http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2014-6278
+
++ /admin/: This might be interesting.
++ /backup/: This might be interesting.
++ /css/: Directory indexing found.
++ /css/: This might be interesting.
++ /img/: Directory indexing found.
++ /img/: This might be interesting.
++ /secret/: This might be interesting.
++ /cgi-bin/test.cgi: This might be interesting.
++ /icons/README: Apache default file found. See: https://www.vntweb.co.uk/apache-restricting-access-to-iconsreadme/
+```
+here nikto detect a vulnerable end point of /cgi-bin/test.cgi it's a vulnerable to shellshock.
+i use my osint skill and found a shellshock exploint by using CVE-2014-6278,and then modified it's so it's work on out target
+linke:https://www.exploit-db.com/exploits/39568
+
 
 
 
