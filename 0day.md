@@ -60,8 +60,11 @@ Time: 30.5 sec  Urls: 810  Fingerprints: 39241
 ```
 
 i try common hints endpoint robosts.txt
+
+
 http://10.80.160.139/robots.txt
-You really thought it'd be this easy?
+'''You really thought it'd be this easy?
+'''
 ```
 i try other path like login,and also admin but amdin return blank page 
 ### Directory Brute Forcing
