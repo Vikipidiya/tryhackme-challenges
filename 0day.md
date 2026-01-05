@@ -34,6 +34,31 @@ Since SSH typically requires valid credentials, I decided to focus on the web se
 
 <img width="1920" height="1080" alt="Screenshot at 2026-01-04 22-00-21" src="https://github.com/user-attachments/assets/47b56902-5133-4a87-808b-2ff06308f83a" />
 ```
+
+i also try to find what web-stack is used here so i try whatweb and wig for more information:
+```mrbunny $ whatweb http://10.80.160.139/
+http://10.80.160.139/ [200 OK] Apache[2.4.7], Bootstrap[4.3.1], Country[RESERVED][ZZ], HTML5, HTTPServer[Ubuntu Linux][Apache/2.4.7 (Ubuntu)], IP[10.80.160.139], JQuery, Meta-Author[name], Script, Title[0day]
+```
+
+```mrbunny $ wig http://10.80.160.139/
+
+wig - WebApp Information Gatherer
+
+
+Scanning http://10.80.160.139/...
+_________________ SITE INFO __________________
+IP              Title                         
+10.80.160.139   0day                        
+                                              
+__________________ VERSION ___________________
+Name            Versions   Type               
+Apache          2.4.7      Platform           
+Ubuntu          14.04      OS                 
+                                              
+______________________________________________
+Time: 30.5 sec  Urls: 810  Fingerprints: 39241
+```
+
 i try common hints endpoint robosts.txt
 http://10.80.160.139/robots.txt
 You really thought it'd be this easy?
@@ -70,7 +95,7 @@ Starting gobuster in directory enumeration mode
 /backup               (Status: 301) [Size: 314] [--> http://10.80.160.139/backup/]
 /secret               (Status: 301) [Size: 314] [--> http://10.80.160.139/secret/]
 ```
-
+i found some intresting directory i try go watch what intresting i can here found
 
 
 
