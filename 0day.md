@@ -118,7 +118,7 @@ now again it's return blank page,so i now go for others
 
 While continuing directory enumeration, I discovered a `/backup` directory. Inside this directory, I found an SSH private key encoded.
 
-```text
+
 
 ![Screenshot at 2026-01-04 22-55-55](https://github.com/user-attachments/assets/fb424ab8-cf07-4a82-81c3-c2a1b5f820e0)
 
@@ -127,8 +127,7 @@ The key was encrypted, meaning a passphrase was required to use it. At this stag
 so save it and crack it
 i used ssh2john to conver in hash so john can understand it for cracking
 and then i simple use john and i get id_rsa:letmein(passphrase key)
-
-```
+---bash
 mrbunny $ nano id_rsa
 mrbunny $ ls
 cache  directory-disctory.txt  id_rsa  port-scan.txt
@@ -152,7 +151,8 @@ mrbunny $ john --show id_rsa.hash
 id_rsa:letmein
 
 1 password hash cracked, 0 left
-mrbunny $ 
+mrbunny $
+'''
 
 
 
