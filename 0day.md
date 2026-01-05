@@ -2,5 +2,5 @@ I started by running an Nmap scan to see what services were exposed on the targe
 
 First, I ran a standard scan with default scripts and version detection:
 
---bash
+```bash
 sudo nmap -sS -p- 10.80.160.139 -oN port-scan.txt -T5
