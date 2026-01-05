@@ -298,7 +298,7 @@ test.cgi
 www-data@ubuntu:/usr/lib/cgi-bin$ 
 
 ```
-
+now we have a initial access good job
 
 
 
