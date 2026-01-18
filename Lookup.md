@@ -256,53 +256,26 @@ uid=33(www-data) gid=33(www-data) groups=33(www-data)
 
 
 ```
+```bahs
+find / -perm /4000 2>/dev/null
 
-
-
-
-## 🚪 Initial Access
-
-* Identified valid username
-* Performed password brute-force
-* Successfully logged in
-
-**Result:** Shell access obtained as a low-privileged user
-
----
-
-## ⬆ Privilege Escalation
-
-* Checked sudo permissions
-* Found misconfigured binary/script
-* Exploited it to gain root access
-
-```bash
-sudo -l
+/snap/core20/1974/usr/bin/newgrp
+/snap/core20/1974/usr/bin/passwd
+/snap/core20/1974/usr/bin/su
+/snap/core20/1974/usr/bin/sudo
+/snap/core20/1974/usr/bin/umount
+/snap/core20/1974/usr/lib/dbus-1.0/dbus-daemon-launch-helper
+/snap/core20/1974/usr/lib/openssh/ssh-keysign
+/usr/lib/policykit-1/polkit-agent-helper-1
+/usr/lib/openssh/ssh-keysign
+/usr/lib/eject/dmcrypt-get-device
+/usr/lib/dbus-1.0/dbus-daemon-launch-helper
+/usr/sbin/pwm
+/usr/bin/at
+/usr/bin/fusermount
+/usr/bin/gpasswd
+/usr/bin/chfn
 ```
 
-**Result:** Root shell obtained 🎉
 
----
-
-## 🏁 Conclusion
-
-This room helped me understand:
-
-* Importance of enumeration
-* Web login vulnerabilities
-* Basic Linux privilege escalation techniques
-
----
-
-## 🛠 Tools Used
-
-* Nmap
-* Gobuster
-* Linux enumeration commands
-
----
-
-## 📚 Learning Outcome
-
-This lab strengthened my practical penetration testing skills and improved my methodology for real-world assessments.
 
