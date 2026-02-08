@@ -1,7 +1,7 @@
  # agent sudo
  In this room we learn about user-agent,ftp bruteforc and magic of stenography,privledge escalaton through outdated software 
 
-# task 1: enumuration
+
 ```bashnmap -sS --top-ports 5000  10.80.185.245  -sV -oN scan.report
 # Nmap 7.95 scan initiated Thu Feb  5 22:12:30 2026 as: /usr/lib/nmap/nmap --top-ports 5000 -sV -T4 -oN scan.report 10.81.156.219
 Nmap scan report for 10.81.156.219
@@ -67,7 +67,18 @@ zip file contain a another secret message but it's encrypted and asked for a pas
 now we have a password lets try to open 8702.zip and open the file 
 <img width="646" height="505" alt="image" src="https://github.com/user-attachments/assets/43fc9ee3-054c-48ed-a16b-7685ac6b7cfd" />
 
-this file is contain a base64 encoded text i 
+this file is contain a base64 encoded text i decode it and get another password i don't know the this password where to belong, we get a another image from ftp,cute-alien.jpg
+
+<img width="886" height="114" alt="image" src="https://github.com/user-attachments/assets/90147787-2c1f-49a0-98c2-c2d39979d415" />
+
+i use steghide --extract -sf cute-alien.jpg it's asked for password and i try this passowrd and boom! we get new user name and passowrd,lets use for ssh login
+
+<img width="963" height="570" alt="image" src="https://github.com/user-attachments/assets/d0d617e3-00a8-4758-b034-63ee1e24624f" />
+
+
+
+
+
 
 
 
