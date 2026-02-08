@@ -1,98 +1,219 @@
- # tryhackme room: agent sudo
- In this room we learn about user-agent,ftp bruteforc and magic of stenography,privledge escalaton through outdated software 
 
+# TryHackMe Walkthrough: Agent Sudo
 
-```bashnmap -sS --top-ports 5000  10.80.185.245  -sV -oN scan.report
-# Nmap 7.95 scan initiated Thu Feb  5 22:12:30 2026 as: /usr/lib/nmap/nmap --top-ports 5000 -sV -T4 -oN scan.report 10.81.156.219
-Nmap scan report for 10.81.156.219
-Host is up (0.16s latency).
-Not shown: 4997 closed tcp ports (reset)
-PORT   STATE SERVICE VERSION
-21/tcp open  ftp     vsftpd 3.0.3
-22/tcp open  ssh     OpenSSH 7.6p1 Ubuntu 4ubuntu0.3 (Ubuntu Linux; protocol 2.0)
-80/tcp open  http    Apache httpd 2.4.29 ((Ubuntu))
-Service Info: OSs: Unix, Linux; CPE: cpe:/o:linux:linux_kernel
+In this room, we learn about:
+- User-Agent manipulation  
+- FTP brute-forcing  
+- Steganography  
+- Privilege escalation via outdated software  
 
-Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
-# Nmap done at Thu Feb  5 22:12:55 2026 -- 1 IP address (1 host up) scanned in 25.48 seconds
+---
 
-```
-i try anonymous login on ftp server and i failled,that's mean it's not configure to login with anonymous ,we need to find valid user name and passwords 
+## 🔍 Initial Enumeration
 
-<img width="1059" height="233" alt="image" src="https://github.com/user-attachments/assets/0111b51c-9051-4c43-86f7-0eaa537dcabb" />
-
-
-here we see a three ports are open so lets see what running on port 80,
-
-<img width="1911" height="577" alt="image" src="https://github.com/user-attachments/assets/8db544cd-4096-4403-a8f3-3dc60235e1f7" />
-
-now the next challenge is a change a user-agent(user-agent is a header tell web server what kind of software is used for request to a web-server it's gives details like browser name,version number and also tells what kind of operation system is used to web-server so it's ) 
-
-they are many ways to change user-agent we can use user-agent swithcter extenstion on our firefox browser,burpsuite,scriptiong,and also python,i try my custom user agent like bunny but it's not work that's mean we need to bruteforce the useragent,room also gives us hint like user agent start with c,
+We start with an Nmap scan to identify open ports and services.
 
 ```bash
-â”Œâ”€â”€(rootã‰¿prime)-[~/Desktop/challenges/agent-sudo]
-â””â”€# curl -A "C"   http://10.80.185.245 -L
-Attention chris, <br><br>
+nmap -sS --top-ports 5000 10.80.185.245 -sV -oN scan.report
+````
 
-Do you still remember our deal? Please tell agent J about the stuff ASAP. Also, change your god damn password, is weak! <br><br>
-
-From,<br>
-Agent R 
-
-
+```text
+PORT   STATE SERVICE VERSION
+21/tcp open  ftp     vsftpd 3.0.3
+22/tcp open  ssh     OpenSSH 7.6p1 Ubuntu 4ubuntu0.3
+80/tcp open  http    Apache httpd 2.4.29
 ```
-now we have a username called chris and it' say a password is weak may be it's indicating on ftp server lets try bruteforce method using assuming chris is username
 
-<img width="1914" height="351" alt="image" src="https://github.com/user-attachments/assets/548d11dd-ed77-455e-9ad2-af8f3b28fc8e" />
+So, **three ports are open**: FTP, SSH, and HTTP.
 
-now we have username and password,after login successfully i donwload all files 
+---
 
-<img width="1912" height="768" alt="image" src="https://github.com/user-attachments/assets/a6385526-f0ce-47e8-b789-05c576a274cc" />
+## 📂 FTP Enumeration
 
-<img width="1893" height="290" alt="image" src="https://github.com/user-attachments/assets/30e5b4ec-aaab-413f-8ccc-2302f41352be" />
+I first tried anonymous login on the FTP server, but it failed.
+This means anonymous access is not configured, and we need valid credentials.
 
-i think here data is hide into a cute-alien.jpg and cute.png, binwalk is best tool to check 
+![FTP anonymous login failed](https://github.com/user-attachments/assets/0111b51c-9051-4c43-86f7-0eaa537dcabb)
 
-<img width="1689" height="500" alt="image" src="https://github.com/user-attachments/assets/61a87778-cc69-4097-a27d-0a4c48f0ee81" />
+---
 
-cutie.png file contain hidden zip files lets extract it and see what we can get interesting
+## 🌐 Web Enumeration (Port 80)
 
-<img width="1918" height="369" alt="image" src="https://github.com/user-attachments/assets/e4011ae5-7f0b-48a9-9d33-77da181950a3" />
+Next, I checked what was running on port 80 by visiting the website.
 
-zip file contain a another secret message but it's encrypted and asked for a password and this is another more time we need to bruteforc,first we use zip2john is a tool used to convert password protected file into hash formate so john can bruteforce it i alread crack it 
+![Web page on port 80](https://github.com/user-attachments/assets/8db544cd-4096-4403-a8f3-3dc60235e1f7)
 
-<img width="1061" height="619" alt="image" src="https://github.com/user-attachments/assets/8b744090-2df7-462b-af57-2463fda38c0e" />
+The page indicates that access depends on the **User-Agent**.
 
-now we have a password lets try to open 8702.zip and open the file 
-<img width="646" height="505" alt="image" src="https://github.com/user-attachments/assets/43fc9ee3-054c-48ed-a16b-7685ac6b7cfd" />
+---
 
-this file is contain a base64 encoded text i decode it and get another password i don't know the this password where to belong, we get a another image from ftp,cute-alien.jpg
+## 🕵️ User-Agent Manipulation
 
-<img width="886" height="114" alt="image" src="https://github.com/user-attachments/assets/90147787-2c1f-49a0-98c2-c2d39979d415" />
+A **User-Agent** is an HTTP header that tells the web server:
 
-i use steghide --extract -sf cute-alien.jpg it's asked for password and i try this passowrd and boom! we get new user name and passowrd,lets use for ssh login
+* Browser name
+* Browser version
+* Operating system
 
-<img width="963" height="570" alt="image" src="https://github.com/user-attachments/assets/d0d617e3-00a8-4758-b034-63ee1e24624f" />
+There are many ways to change it:
 
-in my frist though when author asked for cve number i think he asking for a kernal exploit cve number but i wrong it's actuly asked for sudo version 1.8.21p2, james user has a sudo permision to run /bin/bash with any usser permision expect root users, sudo has a vulnerability ,sudo versions before 1.8.28. At a high level, sudo becomes vulnerable because it doesn't properly check if a specified user ID actually exists or is valid when running commands with elevated privileges. Specifically, if a user has permission to run commands as "any user except root" (a common setup), they can trick sudo by using a special invalid user ID like -1. Sudo interprets -1 as equivalent to 0, which is root's ID, allowing the command to run with full root access despite the restrictions.
+* Browser extensions
+* Burp Suite
+* Curl
+* Scripts (Python, etc.)
 
-you can explor and read your self on this linke
+I tried a custom User-Agent like `bunny`, but it didn’t work.
+The room gives a hint that the User-Agent **starts with the letter `C`**.
 
-https://www.exploit-db.com/exploits/47502
+```bash
+curl -A "C" http://10.80.185.245 -L
+```
 
-just type on termial:
+Response:
+
+```html
+Attention chris,
+
+Do you still remember our deal?
+Please tell agent J about the stuff ASAP.
+Also, change your god damn password, it is weak!
+
+From,
+Agent R
+```
+
+🎯 We now have a **username: `chris`**
+The message also hints that the password is **weak**, likely for FTP.
+
+---
+
+## 🔐 FTP Brute Force
+
+Using `chris` as the username, I performed an FTP brute-force attack and successfully obtained the password.
+
+![FTP brute force success](https://github.com/user-attachments/assets/548d11dd-ed77-455e-9ad2-af8f3b28fc8e)
+
+After logging in, I downloaded all the files.
+
+![FTP downloaded files](https://github.com/user-attachments/assets/a6385526-f0ce-47e8-b789-05c576a274cc)
+
+![FTP file listing](https://github.com/user-attachments/assets/30e5b4ec-aaab-413f-8ccc-2302f41352be)
+
+---
+
+## 🖼️ Steganography & File Analysis
+
+I suspected hidden data inside the image files, so I used **binwalk**.
+
+```bash
+binwalk cutie.png
+```
+
+![Binwalk output](https://github.com/user-attachments/assets/61a87778-cc69-4097-a27d-0a4c48f0ee81)
+
+`cutie.png` contains a **hidden ZIP file**.
+
+---
+
+## 📦 Extracting the ZIP
+
+I extracted the ZIP file and found that it was **password protected**.
+
+![Extracted zip file](https://github.com/user-attachments/assets/e4011ae5-7f0b-48a9-9d33-77da181950a3)
+
+To crack it, I used `zip2john` and `john`.
+
+![zip2john and john cracking](https://github.com/user-attachments/assets/8b744090-2df7-462b-af57-2463fda38c0e)
+
+---
+
+## 🔑 Decoding the Secret
+
+After extracting the ZIP, I found a file containing **Base64-encoded text**.
+
+![Base64 encoded text](https://github.com/user-attachments/assets/43fc9ee3-054c-48ed-a16b-7685ac6b7cfd)
+
+After decoding it, I obtained another password, but I didn’t know where to use it yet.
+
+---
+
+## 🕵️ Steghide on cute-alien.jpg
+
+From the FTP server, we also got another image: `cute-alien.jpg`.
+
+![cute-alien.jpg](https://github.com/user-attachments/assets/90147787-2c1f-49a0-98c2-c2d39979d415)
+
+I used `steghide` to extract hidden data:
+
+```bash
+steghide extract -sf cute-alien.jpg
+```
+
+It asked for a password. I tried the **Base64-decoded password**, and it worked.
+
+🎉 This revealed a **new username and password**.
+
+---
+
+## 🔐 SSH Login
+
+Using the extracted credentials, I logged in via SSH.
+
+![SSH login success](https://github.com/user-attachments/assets/d0d617e3-00a8-4758-b034-63ee1e24624f)
+
+---
+
+## 🚀 Privilege Escalation (Sudo CVE)
+
+Initially, I thought the room was asking for a **kernel CVE**, but that was incorrect.
+
+The real issue is with **sudo version 1.8.21p2**.
+
+User `james` has the following sudo permission:
+
+```text
+(ALL, !root) /bin/bash
+```
+
+This means:
+
+* Can run `/bin/bash`
+* As any user **except root**
+
+However, sudo versions **before 1.8.28** are vulnerable.
+Sudo fails to properly validate user IDs.
+Using an invalid UID like `-1`, sudo treats it as UID `0` (root).
+
+---
+
+## 🧨 Exploitation
+
 ```bash
 sudo -u#-1 /bin/bash
 ```
-<img width="1372" height="601" alt="image" src="https://github.com/user-attachments/assets/af59c464-b4ab-4267-913c-ad57fdcf9f3c" />
 
-i hope you understood very well,keep learning and be creative!
+![Root shell](https://github.com/user-attachments/assets/af59c464-b4ab-4267-913c-ad57fdcf9f3c)
+
+🔥 **Root access achieved!**
+
+---
+
+## 🏁 Conclusion
+
+This room covers:
+
+* Enumeration
+* User-Agent abuse
+* FTP brute-forcing
+* Steganography
+* Privilege escalation using a real sudo CVE
+
+Exploit reference:
+[https://www.exploit-db.com/exploits/47502](https://www.exploit-db.com/exploits/47502)
+
+Keep learning and stay creative 🚀
+
+```
 
 
-
-
-
-
-
-
+```
